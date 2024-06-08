@@ -43,12 +43,12 @@ class Config(object):
             config_file_list (list of str): the external config file, it allows multiple config files, default is None.
             config_dict (dict): the external parameter dictionaries, default is None.
         """
-        self._init_parameters_category()
         self.yaml_loader = self._build_yaml_loader()
         self.file_config_dict = self._load_config_files(config_file_list)
         self.variable_config_dict = self._load_variable_config_dict(config_dict)
         self.cmd_config_dict = self._load_cmd_line()
         self._merge_external_config_dict()
+        self.final_config_dict = self._get_final_config_dict()
 
     def _build_yaml_loader(self):
         loader = yaml.FullLoader
