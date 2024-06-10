@@ -8,6 +8,66 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 
 
+def early_stopping(value, best, cur_step, max_step, bigger=True):
+    r"""validation-based early stopping
+
+    Args:
+        value (float): current result
+        best (float): best result
+        cur_step (int): the number of consecutive steps that did not exceed the best result
+        max_step (int): threshold steps for stopping
+        bigger (bool, optional): whether the bigger the better
+
+    Returns:
+        tuple:
+        - float,
+          best result after this step
+        - int,
+          the number of consecutive steps that did not exceed the best result after this step
+        - bool,
+          whether to stop
+        - bool,
+          whether to update
+    """
+    stop_flag = False
+    update_flag = False
+    if bigger:
+        if value >= best:
+            cur_step = 0
+            best = value
+            update_flag = True
+        else:
+            cur_step += 1
+            if cur_step > max_step:
+                stop_flag = True
+    else:
+        if value <= best:
+            cur_step = 0
+            best = value
+            update_flag = True
+        else:
+            cur_step += 1
+            if cur_step > max_step:
+                stop_flag = True
+    return best, cur_step, stop_flag, update_flag
+
+
+def calculate_valid_score(valid_result, valid_metric=None):
+    r"""return valid score from valid result
+
+    Args:
+        valid_result (dict): valid result
+        valid_metric (str, optional): the selected metric in valid result for valid score
+
+    Returns:
+        float: valid score
+    """
+    if valid_metric:
+        return valid_result[valid_metric]
+    else:
+        raise NotImplementedError("valid_metric is not implemented")
+
+
 def get_local_time():
     r"""Get current time
 
